@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>World Cup 2026 · Score Predictions</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       DESIGN TOKENS
+    ============================================================ */
+    :root {
+      --navy:        #0b1120;
+      --navy-mid:    #111c30;
+      --navy-card:   #162035;
+      --navy-border: #1e2d47;
+      --green:       #00d46a;
+      --green-dim:   #00a854;
+      --green-glow:  rgba(0, 212, 106, 0.18);
+      --gold:        #f5c518;
+      --white:       #f0f4ff;
+      --muted:       #6b7fa3;
+      --danger:      #ff4d6d;
+
+      --font-display: 'Barlow Condensed', sans-serif;
+      --font-body:    'Inter', sans-serif;
+
+      --radius-card:  12px;
+      --radius-input: 8px;
+      --input-size:   52px;
+
+      --transition: 0.18s ease;
+    }
+
+    /* ============================================================
+       RESET & BASE
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--navy);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 15px;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ============================================================
+       HEADER
+    ============================================================ */
+    .site-header {
+      background: linear-gradient(180deg, #0d1829 0%, var(--navy) 100%);
+      border-bottom: 1px solid var(--navy-border);
+      padding: 28px 20px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .site-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 100% at 50% -10%, rgba(0,212,106,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .header-eyebrow {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 8px;
+    }
+
+    .header-title {
+      font-family: var(--font-display);
+      font-size: clamp(34px, 8vw, 56px);
+      font-weight: 800;
+      line-height: 0.95;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      color: var(--white);
+    }
+
+    .header-title span {
+      color: var(--green);
+    }
+
+    .header-sub {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--muted);
+      margin-top: 10px;
+      letter-spacing: 0.04em;
+    }
+
+    /* ============================================================
+       STICKY TOOLBAR
+    ============================================================ */
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(11, 17, 32, 0.96);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--navy-border);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .progress-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .progress-label {
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .progress-label strong {
+      color: var(--green);
+      font-size: 14px;
+    }
+
+    .progress-bar-track {
+      height: 3px;
+      background: var(--navy-border);
+      border-radius: 99px;
+      overflow: hidden;
+      width: 100%;
+      max-width: 200px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green-dim), var(--green));
+      border-radius: 99px;
+      transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+      width: 0%;
+    }
+
+    .toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .save-indicator {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--green);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .save-indicator.visible { opacity: 1; }
+
+    .btn {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 14px;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .btn-ghost {
+      background: var(--navy-card);
+      color: var(--muted);
+      border: 1px solid var(--navy-border);
+    }
+
+    .btn-ghost:hover {
+      background: var(--navy-border);
+      color: var(--white);
+    }
+
+    .btn-green {
+      background: var(--green);
+      color: var(--navy);
+    }
+
+    .btn-green:hover {
+      background: #00f07a;
+      transform: translateY(-1px);
+    }
+
+    .btn-danger {
+      background: transparent;
+      color: var(--danger);
+      border: 1px solid rgba(255,77,109,0.3);
+    }
+
+    .btn-danger:hover {
+      background: rgba(255,77,109,0.1);
+    }
+
+    /* ============================================================
+       MAIN CONTENT
+    ============================================================ */
+    .main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 28px 16px 60px;
+    }
+
+    /* ============================================================
+       GROUP SECTION
+    ============================================================ */
+    .group-section {
+      margin-bottom: 32px;
+    }
+
+    .group-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--navy-border);
+    }
+
+    .group-pill {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      background: var(--green);
+      color: var(--navy);
+      padding: 3px 10px;
+      border-radius: 4px;
+    }
+
+    .group-name {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--white);
+    }
+
+    /* ============================================================
+       MATCH CARD
+    ============================================================ */
+    .match-card {
+      background: var(--navy-card);
+      border: 1px solid var(--navy-border);
+      border-radius: var(--radius-card);
+      padding: 14px 16px;
+      margin-bottom: 8px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 12px;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .match-card:has(.score-input:focus) {
+      border-color: rgba(0,212,106,0.4);
+      box-shadow: 0 0 0 1px rgba(0,212,106,0.12), 0 4px 24px rgba(0,212,106,0.07);
+    }
+
+    .match-card.predicted {
+      border-color: rgba(0,212,106,0.2);
+    }
+
+    /* Team side */
+    .team {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .team.away {
+      flex-direction: row-reverse;
+      text-align: right;
+    }
+
+    .team-flag {
+      font-size: 24px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .team-info {
+      min-width: 0;
+    }
+
+    .team-name {
+      font-family: var(--font-display);
+      font-size: clamp(14px, 3.5vw, 17px);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: var(--white);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .match-date {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      margin-top: 2px;
+      white-space: nowrap;
+    }
+
+    /* Score area */
+    .score-area {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .score-input {
+      width: var(--input-size);
+      height: var(--input-size);
+      background: var(--navy-mid);
+      border: 2px solid var(--navy-border);
+      border-radius: var(--radius-input);
+      color: var(--white);
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 800;
+      text-align: center;
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+      -moz-appearance: textfield;
+      appearance: textfield;
+      /* Prevent scroll on mobile */
+      touch-action: manipulation;
+    }
+
+    .score-input::-webkit-inner-spin-button,
+    .score-input::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+    }
+
+    .score-input:focus {
+      border-color: var(--green);
+      background: rgba(0,212,106,0.06);
+      box-shadow: 0 0 0 3px var(--green-glow);
+      color: var(--green);
+    }
+
+    .score-input.has-value {
+      border-color: rgba(0,212,106,0.35);
+      color: var(--green);
+    }
+
+    .score-input.has-value:not(:focus) {
+      background: rgba(0,212,106,0.04);
+    }
+
+    .score-dash {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--navy-border);
+    }
+
+    /* ============================================================
+       MODAL — Reset confirm
+    ============================================================ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 10, 20, 0.85);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: var(--navy-card);
+      border: 1px solid var(--navy-border);
+      border-radius: 16px;
+      padding: 32px 28px;
+      max-width: 380px;
+      width: 100%;
+      transform: translateY(12px);
+      transition: transform 0.2s ease;
+      text-align: center;
+    }
+
+    .modal-overlay.open .modal {
+      transform: translateY(0);
+    }
+
+    .modal-icon {
+      font-size: 40px;
+      margin-bottom: 14px;
+    }
+
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .modal-text {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .modal-actions .btn {
+      flex: 1;
+      padding: 10px 20px;
+      font-size: 14px;
+    }
+
+    /* ============================================================
+       TOAST
+    ============================================================ */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--navy-card);
+      border: 1px solid var(--green);
+      color: var(--green);
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 10px 20px;
+      border-radius: 99px;
+      z-index: 300;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    .site-footer {
+      text-align: center;
+      padding: 24px 20px;
+      border-top: 1px solid var(--navy-border);
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+    }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 480px) {
+      :root { --input-size: 46px; }
+
+      .team-flag { font-size: 20px; }
+
+      .score-input { font-size: 22px; }
+
+      .match-card { padding: 12px 12px; gap: 8px; }
+
+      .toolbar { padding: 8px 12px; }
+
+      .btn { padding: 6px 10px; font-size: 12px; }
+
+      .modal { padding: 24px 20px; }
+    }
+
+    @media (max-width: 360px) {
+      :root { --input-size: 42px; }
+      .score-dash { font-size: 18px; }
+    }
+
+    /* ============================================================
+       REDUCED MOTION
+    ============================================================ */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-eyebrow">FIFA World Cup 2026</div>
+    <h1 class="header-title">Score<br><span>Predictions</span></h1>
+    <p class="header-sub">72 matches · 11–27 Jun 2026 · Enter your predicted scores</p>
+  </header>
+
+  <!-- STICKY TOOLBAR -->
+  <div class="toolbar" role="toolbar" aria-label="Controls">
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <strong id="progress-count">0</strong> / <span id="progress-total">0</span> predicted
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progress-bar"></div>
+      </div>
+    </div>
+    <div class="toolbar-right">
+      <span class="save-indicator" id="save-indicator" aria-live="polite">✓ Saved</span>
+      <button class="btn btn-ghost" id="btn-export" title="Export predictions as CSV">Export CSV</button>
+      <button class="btn btn-danger" id="btn-reset" title="Reset all predictions">Reset</button>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="main" id="matches-container">
+    <!-- Groups rendered by JS -->
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    Predictions are saved in your browser · No account needed
+  </footer>
+
+  <!-- RESET CONFIRM MODAL -->
+  <div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal">
+      <div class="modal-icon">⚠️</div>
+      <h2 class="modal-title" id="modal-title">Reset All?</h2>
+      <p class="modal-text">This will clear every predicted score. This cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="modal-cancel">Cancel</button>
+        <button class="btn btn-danger" id="modal-confirm">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- DATA + APP (all inlined — single file, no external dependencies) -->
+  <script>
+  /* ============================================================
+     FIXTURES — FIFA World Cup 2026 Group Stage
+     Each match: { id, homeTeam, homeFlag, awayTeam, awayFlag, date }
+     Flag emojis: https://emojipedia.org/flags
+  ============================================================ */
+  const FIXTURES = [
+    {
+      name: "Thu 11 Jun — Matchday 1",
+      matches: [
+        { id: "m1",  homeTeam: "Mexico",      homeFlag: "🇲🇽", awayTeam: "South Africa", awayFlag: "🇿🇦", date: "11 Jun · 19:00 GMT" },
+        { id: "m2",  homeTeam: "South Korea", homeFlag: "🇰🇷", awayTeam: "Czechia",      awayFlag: "🇨🇿", date: "11 Jun · 02:00 GMT" },
+      ]
+    },
+    {
+      name: "Fri 12 Jun — Matchday 2",
+      matches: [
+        { id: "m3",  homeTeam: "Canada",        homeFlag: "🇨🇦", awayTeam: "Bosnia & Herzegovina", awayFlag: "🇧🇦", date: "12 Jun · 19:00 GMT" },
+        { id: "m4",  homeTeam: "United States", homeFlag: "🇺🇸", awayTeam: "Paraguay",             awayFlag: "🇵🇾", date: "12 Jun · 01:00 GMT" },
+      ]
+    },
+    {
+      name: "Sat 13 Jun — Matchday 3",
+      matches: [
+        { id: "m5",  homeTeam: "Qatar",    homeFlag: "🇶🇦", awayTeam: "Switzerland", awayFlag: "🇨🇭", date: "13 Jun · 19:00 GMT" },
+        { id: "m6",  homeTeam: "Brazil",   homeFlag: "🇧🇷", awayTeam: "Morocco",     awayFlag: "🇲🇦", date: "13 Jun · 22:00 GMT" },
+        { id: "m7",  homeTeam: "Haiti",    homeFlag: "🇭🇹", awayTeam: "Scotland",    awayFlag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿", date: "13 Jun · 01:00 GMT" },
+        { id: "m8",  homeTeam: "Australia",homeFlag: "🇦🇺", awayTeam: "Türkiye",     awayFlag: "🇹🇷", date: "13 Jun · 04:00 GMT" },
+      ]
+    },
+    {
+      name: "Sun 14 Jun — Matchday 4",
+      matches: [
+        { id: "m9",  homeTeam: "Germany",      homeFlag: "🇩🇪", awayTeam: "Curaçao",    awayFlag: "🇨🇼", date: "14 Jun · 17:00 GMT" },
+        { id: "m10", homeTeam: "Netherlands",  homeFlag: "🇳🇱", awayTeam: "Japan",      awayFlag: "🇯🇵", date: "14 Jun · 20:00 GMT" },
+        { id: "m11", homeTeam: "Ivory Coast",  homeFlag: "🇨🇮", awayTeam: "Ecuador",    awayFlag: "🇪🇨", date: "14 Jun · 23:00 GMT" },
+        { id: "m12", homeTeam: "Sweden",       homeFlag: "🇸🇪", awayTeam: "Tunisia",    awayFlag: "🇹🇳", date: "14 Jun · 02:00 GMT" },
+      ]
+    },
+    {
+      name: "Mon 15 Jun — Matchday 5",
+      matches: [
+        { id: "m13", homeTeam: "Spain",        homeFlag: "🇪🇸", awayTeam: "Cape Verde",  awayFlag: "🇨🇻", date: "15 Jun · 16:00 GMT" },
+        { id: "m14", homeTeam: "Belgium",      homeFlag: "🇧🇪", awayTeam: "Egypt",       awayFlag: "🇪🇬", date: "15 Jun · 19:00 GMT" },
+        { id: "m15", homeTeam: "Saudi Arabia", homeFlag: "🇸🇦", awayTeam: "Uruguay",     awayFlag: "🇺🇾", date: "15 Jun · 22:00 GMT" },
+        { id: "m16", homeTeam: "Iran",         homeFlag: "🇮🇷", awayTeam: "New Zealand", awayFlag: "🇳🇿", date: "15 Jun · 01:00 GMT" },
+      ]
+    },
+    {
+      name: "Tue 16 Jun — Matchday 6",
+      matches: [
+        { id: "m17", homeTeam: "France",    homeFlag: "🇫🇷", awayTeam: "Senegal",  awayFlag: "🇸🇳", date: "16 Jun · 19:00 GMT" },
+        { id: "m18", homeTeam: "Iraq",      homeFlag: "🇮🇶", awayTeam: "Norway",   awayFlag: "🇳🇴", date: "16 Jun · 22:00 GMT" },
+        { id: "m19", homeTeam: "Argentina", homeFlag: "🇦🇷", awayTeam: "Algeria",  awayFlag: "🇩🇿", date: "16 Jun · 01:00 GMT" },
+        { id: "m20", homeTeam: "Austria",   homeFlag: "🇦🇹", awayTeam: "Jordan",   awayFlag: "🇯🇴", date: "16 Jun · 04:00 GMT" },
+      ]
+    },
+    {
+      name: "Wed 17 Jun — Matchday 7",
+      matches: [
+        { id: "m21", homeTeam: "Portugal",   homeFlag: "🇵🇹", awayTeam: "DR Congo",   awayFlag: "🇨🇩", date: "17 Jun · 17:00 GMT" },
+        { id: "m22", homeTeam: "England",    homeFlag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", awayTeam: "Croatia",   awayFlag: "🇭🇷", date: "17 Jun · 20:00 GMT" },
+        { id: "m23", homeTeam: "Ghana",      homeFlag: "🇬🇭", awayTeam: "Panama",     awayFlag: "🇵🇦", date: "17 Jun · 23:00 GMT" },
+        { id: "m24", homeTeam: "Uzbekistan", homeFlag: "🇺🇿", awayTeam: "Colombia",   awayFlag: "🇨🇴", date: "17 Jun · 02:00 GMT" },
+      ]
+    },
+    {
+      name: "Thu 18 Jun — Matchday 8",
+      matches: [
+        { id: "m25", homeTeam: "Czechia",      homeFlag: "🇨🇿", awayTeam: "South Africa",        awayFlag: "🇿🇦", date: "18 Jun · 16:00 GMT" },
+        { id: "m26", homeTeam: "Switzerland",  homeFlag: "🇨🇭", awayTeam: "Bosnia & Herzegovina", awayFlag: "🇧🇦", date: "18 Jun · 19:00 GMT" },
+        { id: "m27", homeTeam: "Canada",       homeFlag: "🇨🇦", awayTeam: "Qatar",               awayFlag: "🇶🇦", date: "18 Jun · 22:00 GMT" },
+        { id: "m28", homeTeam: "Mexico",       homeFlag: "🇲🇽", awayTeam: "South Korea",         awayFlag: "🇰🇷", date: "18 Jun · 01:00 GMT" },
+      ]
+    },
+    {
+      name: "Fri 19 Jun — Matchday 9",
+      matches: [
+        { id: "m29", homeTeam: "Scotland",      homeFlag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿", awayTeam: "Morocco",    awayFlag: "🇲🇦", date: "19 Jun · 22:00 GMT" },
+        { id: "m30", homeTeam: "United States", homeFlag: "🇺🇸", awayTeam: "Australia",  awayFlag: "🇦🇺", date: "19 Jun · 19:00 GMT" },
+        { id: "m31", homeTeam: "Brazil",        homeFlag: "🇧🇷", awayTeam: "Haiti",      awayFlag: "🇭🇹", date: "19 Jun · 00:30 GMT" },
+        { id: "m32", homeTeam: "Türkiye",       homeFlag: "🇹🇷", awayTeam: "Paraguay",   awayFlag: "🇵🇾", date: "19 Jun · 03:00 GMT" },
+      ]
+    },
+    {
+      name: "Sat 20 Jun — Matchday 10",
+      matches: [
+        { id: "m33", homeTeam: "Netherlands", homeFlag: "🇳🇱", awayTeam: "Sweden",      awayFlag: "🇸🇪", date: "20 Jun · 17:00 GMT" },
+        { id: "m34", homeTeam: "Germany",     homeFlag: "🇩🇪", awayTeam: "Ivory Coast", awayFlag: "🇨🇮", date: "20 Jun · 20:00 GMT" },
+        { id: "m35", homeTeam: "Ecuador",     homeFlag: "🇪🇨", awayTeam: "Curaçao",     awayFlag: "🇨🇼", date: "20 Jun · 03:00 GMT" },
+        { id: "m36", homeTeam: "Tunisia",     homeFlag: "🇹🇳", awayTeam: "Japan",       awayFlag: "🇯🇵", date: "20 Jun · 04:00 GMT" },
+      ]
+    },
+    {
+      name: "Sun 21 Jun — Matchday 11",
+      matches: [
+        { id: "m37", homeTeam: "Spain",        homeFlag: "🇪🇸", awayTeam: "Saudi Arabia", awayFlag: "🇸🇦", date: "21 Jun · 16:00 GMT" },
+        { id: "m38", homeTeam: "Belgium",      homeFlag: "🇧🇪", awayTeam: "Iran",         awayFlag: "🇮🇷", date: "21 Jun · 19:00 GMT" },
+        { id: "m39", homeTeam: "Uruguay",      homeFlag: "🇺🇾", awayTeam: "Cape Verde",   awayFlag: "🇨🇻", date: "21 Jun · 22:00 GMT" },
+        { id: "m40", homeTeam: "New Zealand",  homeFlag: "🇳🇿", awayTeam: "Egypt",        awayFlag: "🇪🇬", date: "21 Jun · 01:00 GMT" },
+      ]
+    },
+    {
+      name: "Mon 22 Jun — Matchday 12",
+      matches: [
+        { id: "m41", homeTeam: "Argentina", homeFlag: "🇦🇷", awayTeam: "Austria",  awayFlag: "🇦🇹", date: "22 Jun · 17:00 GMT" },
+        { id: "m42", homeTeam: "France",    homeFlag: "🇫🇷", awayTeam: "Iraq",     awayFlag: "🇮🇶", date: "22 Jun · 21:00 GMT" },
+        { id: "m43", homeTeam: "Norway",    homeFlag: "🇳🇴", awayTeam: "Senegal",  awayFlag: "🇸🇳", date: "22 Jun · 00:00 GMT" },
+        { id: "m44", homeTeam: "Jordan",    homeFlag: "🇯🇴", awayTeam: "Algeria",  awayFlag: "🇩🇿", date: "22 Jun · 03:00 GMT" },
+      ]
+    },
+    {
+      name: "Tue 23 Jun — Matchday 13",
+      matches: [
+        { id: "m45", homeTeam: "Portugal",   homeFlag: "🇵🇹", awayTeam: "Uzbekistan", awayFlag: "🇺🇿", date: "23 Jun · 17:00 GMT" },
+        { id: "m46", homeTeam: "England",    homeFlag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", awayTeam: "Ghana",     awayFlag: "🇬🇭", date: "23 Jun · 20:00 GMT" },
+        { id: "m47", homeTeam: "Panama",     homeFlag: "🇵🇦", awayTeam: "Croatia",   awayFlag: "🇭🇷", date: "23 Jun · 23:00 GMT" },
+        { id: "m48", homeTeam: "Colombia",   homeFlag: "🇨🇴", awayTeam: "DR Congo",  awayFlag: "🇨🇩", date: "23 Jun · 02:00 GMT" },
+      ]
+    },
+    {
+      name: "Wed 24 Jun — Matchday 14",
+      matches: [
+        { id: "m49", homeTeam: "Switzerland",          homeFlag: "🇨🇭", awayTeam: "Canada",               awayFlag: "🇨🇦", date: "24 Jun · 19:00 GMT" },
+        { id: "m50", homeTeam: "Bosnia & Herzegovina", homeFlag: "🇧🇦", awayTeam: "Qatar",                awayFlag: "🇶🇦", date: "24 Jun · 19:00 GMT" },
+        { id: "m51", homeTeam: "Scotland",             homeFlag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿", awayTeam: "Brazil",               awayFlag: "🇧🇷", date: "24 Jun · 22:00 GMT" },
+        { id: "m52", homeTeam: "Morocco",              homeFlag: "🇲🇦", awayTeam: "Haiti",                awayFlag: "🇭🇹", date: "24 Jun · 22:00 GMT" },
+        { id: "m53", homeTeam: "Czechia",              homeFlag: "🇨🇿", awayTeam: "Mexico",               awayFlag: "🇲🇽", date: "24 Jun · 01:00 GMT" },
+        { id: "m54", homeTeam: "South Africa",         homeFlag: "🇿🇦", awayTeam: "South Korea",          awayFlag: "🇰🇷", date: "24 Jun · 01:00 GMT" },
+      ]
+    },
+    {
+      name: "Thu 25 Jun — Matchday 15",
+      matches: [
+        { id: "m55", homeTeam: "Ecuador",       homeFlag: "🇪🇨", awayTeam: "Germany",    awayFlag: "🇩🇪", date: "25 Jun · 20:00 GMT" },
+        { id: "m56", homeTeam: "Curaçao",       homeFlag: "🇨🇼", awayTeam: "Ivory Coast",awayFlag: "🇨🇮", date: "25 Jun · 20:00 GMT" },
+        { id: "m57", homeTeam: "Japan",         homeFlag: "🇯🇵", awayTeam: "Sweden",     awayFlag: "🇸🇪", date: "25 Jun · 23:00 GMT" },
+        { id: "m58", homeTeam: "Tunisia",       homeFlag: "🇹🇳", awayTeam: "Netherlands",awayFlag: "🇳🇱", date: "25 Jun · 23:00 GMT" },
+        { id: "m59", homeTeam: "Türkiye",       homeFlag: "🇹🇷", awayTeam: "United States",awayFlag: "🇺🇸", date: "25 Jun · 02:00 GMT" },
+        { id: "m60", homeTeam: "Paraguay",      homeFlag: "🇵🇾", awayTeam: "Australia",  awayFlag: "🇦🇺", date: "25 Jun · 02:00 GMT" },
+      ]
+    },
+    {
+      name: "Fri 26 Jun — Matchday 16",
+      matches: [
+        { id: "m61", homeTeam: "Norway",      homeFlag: "🇳🇴", awayTeam: "France",       awayFlag: "🇫🇷", date: "26 Jun · 19:00 GMT" },
+        { id: "m62", homeTeam: "Senegal",     homeFlag: "🇸🇳", awayTeam: "Iraq",         awayFlag: "🇮🇶", date: "26 Jun · 19:00 GMT" },
+        { id: "m63", homeTeam: "Cape Verde",  homeFlag: "🇨🇻", awayTeam: "Saudi Arabia", awayFlag: "🇸🇦", date: "26 Jun · 00:00 GMT" },
+        { id: "m64", homeTeam: "Uruguay",     homeFlag: "🇺🇾", awayTeam: "Spain",        awayFlag: "🇪🇸", date: "26 Jun · 00:00 GMT" },
+        { id: "m65", homeTeam: "Egypt",       homeFlag: "🇪🇬", awayTeam: "Iran",         awayFlag: "🇮🇷", date: "26 Jun · 03:00 GMT" },
+        { id: "m66", homeTeam: "New Zealand", homeFlag: "🇳🇿", awayTeam: "Belgium",      awayFlag: "🇧🇪", date: "26 Jun · 03:00 GMT" },
+      ]
+    },
+    {
+      name: "Sat 27 Jun — Matchday 17",
+      matches: [
+        { id: "m67", homeTeam: "Panama",     homeFlag: "🇵🇦", awayTeam: "England",    awayFlag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", date: "27 Jun · 21:00 GMT" },
+        { id: "m68", homeTeam: "Croatia",    homeFlag: "🇭🇷", awayTeam: "Ghana",      awayFlag: "🇬🇭", date: "27 Jun · 21:00 GMT" },
+        { id: "m69", homeTeam: "Colombia",   homeFlag: "🇨🇴", awayTeam: "Portugal",   awayFlag: "🇵🇹", date: "27 Jun · 23:30 GMT" },
+        { id: "m70", homeTeam: "DR Congo",   homeFlag: "🇨🇩", awayTeam: "Uzbekistan", awayFlag: "🇺🇿", date: "27 Jun · 23:30 GMT" },
+        { id: "m71", homeTeam: "Algeria",    homeFlag: "🇩🇿", awayTeam: "Austria",    awayFlag: "🇦🇹", date: "27 Jun · 02:00 GMT" },
+        { id: "m72", homeTeam: "Jordan",     homeFlag: "🇯🇴", awayTeam: "Argentina",  awayFlag: "🇦🇷", date: "27 Jun · 02:00 GMT" },
+      ]
+    },
+  ];
+  </script>
+  <script>
+  /* ============================================================
+     WORLD CUP PREDICTIONS — app.js (inlined)
+  ============================================================ */
+
+  const STORAGE_KEY = 'wc2026_predictions';
+
+  /* --- State ------------------------------------------------- */
+  let predictions = {};
+
+  /* --- Load from localStorage -------------------------------- */
+  function loadPredictions() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      predictions = raw ? JSON.parse(raw) : {};
+    } catch (e) {
+      predictions = {};
+    }
+  }
+
+  /* --- Save to localStorage ---------------------------------- */
+  function savePredictions() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(predictions));
+      flashSaveIndicator();
+    } catch (e) {
+      console.warn('Could not save to localStorage:', e);
+    }
+  }
+
+  /* --- Flash "Saved" indicator ------------------------------- */
+  let saveTimer;
+  function flashSaveIndicator() {
+    const el = document.getElementById('save-indicator');
+    el.classList.add('visible');
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => el.classList.remove('visible'), 1800);
+  }
+
+  /* --- Update progress bar ----------------------------------- */
+  function updateProgress() {
+    const allMatches = FIXTURES.flatMap(g => g.matches);
+    const total = allMatches.length;
+    const filled = allMatches.filter(m =>
+      predictions[m.id]?.home !== '' && predictions[m.id]?.home !== undefined &&
+      predictions[m.id]?.away !== '' && predictions[m.id]?.away !== undefined
+    ).length;
+
+    document.getElementById('progress-count').textContent = filled;
+    document.getElementById('progress-total').textContent = total;
+    const pct = total > 0 ? (filled / total) * 100 : 0;
+    document.getElementById('progress-bar').style.width = pct + '%';
+  }
+
+  /* --- Sanitise input value ---------------------------------- */
+  function sanitiseScore(val) {
+    const n = parseInt(val, 10);
+    if (isNaN(n)) return '';
+    return String(Math.min(20, Math.max(0, n)));
+  }
+
+  /* --- Handle score input change ----------------------------- */
+  function handleScoreChange(matchId, side, inputEl) {
+    const val = sanitiseScore(inputEl.value);
+    inputEl.value = val;
+
+    if (!predictions[matchId]) predictions[matchId] = { home: '', away: '' };
+    predictions[matchId][side] = val;
+
+    // Update styling
+    inputEl.classList.toggle('has-value', val !== '');
+
+    // Update card predicted state
+    const card = inputEl.closest('.match-card');
+    const isPredicted =
+      predictions[matchId].home !== '' &&
+      predictions[matchId].away !== '';
+    card.classList.toggle('predicted', isPredicted);
+
+    savePredictions();
+    updateProgress();
+  }
+
+  /* --- Prevent invalid keys ---------------------------------- */
+  function handleScoreKeydown(e) {
+    // Allow: backspace, delete, tab, escape, enter, arrow keys, home, end
+    const allowed = [
+      'Backspace','Delete','Tab','Escape','Enter',
+      'ArrowLeft','ArrowRight','ArrowUp','ArrowDown',
+      'Home','End'
+    ];
+    if (allowed.includes(e.key)) return;
+    // Allow digits 0-9
+    if (/^\d$/.test(e.key)) return;
+    // Block everything else
+    e.preventDefault();
+  }
+
+  /* --- Keyboard: move between inputs with arrow keys --------- */
+  function handleInputArrow(e, allInputs, idx) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      const next = allInputs[idx + 1];
+      if (next) next.focus();
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prev = allInputs[idx - 1];
+      if (prev) prev.focus();
+    }
+  }
+
+  /* --- Render all groups & matches --------------------------- */
+  function renderFixtures() {
+    const container = document.getElementById('matches-container');
+    container.innerHTML = '';
+
+    const allInputs = [];
+
+    FIXTURES.forEach(group => {
+      const section = document.createElement('section');
+      section.className = 'group-section';
+
+      const header = document.createElement('div');
+      header.className = 'group-header';
+      header.innerHTML = `
+        <span class="group-pill">Group</span>
+        <span class="group-name">${escapeHtml(group.name)}</span>
+      `;
+      section.appendChild(header);
+
+      group.matches.forEach(match => {
+        const saved = predictions[match.id] || { home: '', away: '' };
+        const isPredicted = saved.home !== '' && saved.away !== '';
+
+        const card = document.createElement('div');
+        card.className = `match-card${isPredicted ? ' predicted' : ''}`;
+        card.setAttribute('data-match-id', match.id);
+
+        card.innerHTML = `
+          <div class="team home">
+            <span class="team-flag" aria-hidden="true">${match.homeFlag}</span>
+            <div class="team-info">
+              <div class="team-name">${escapeHtml(match.homeTeam)}</div>
+              <div class="match-date">${escapeHtml(match.date)}</div>
+            </div>
+          </div>
+
+          <div class="score-area">
+            <input
+              class="score-input${saved.home !== '' ? ' has-value' : ''}"
+              type="number"
+              min="0" max="20" step="1"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              value="${escapeHtml(saved.home)}"
+              aria-label="${escapeHtml(match.homeTeam)} score"
+              data-match="${match.id}"
+              data-side="home"
+            />
+            <span class="score-dash" aria-hidden="true">–</span>
+            <input
+              class="score-input${saved.away !== '' ? ' has-value' : ''}"
+              type="number"
+              min="0" max="20" step="1"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              value="${escapeHtml(saved.away)}"
+              aria-label="${escapeHtml(match.awayTeam)} score"
+              data-match="${match.id}"
+              data-side="away"
+            />
+          </div>
+
+          <div class="team away">
+            <span class="team-flag" aria-hidden="true">${match.awayFlag}</span>
+            <div class="team-info">
+              <div class="team-name">${escapeHtml(match.awayTeam)}</div>
+            </div>
+          </div>
+        `;
+
+        section.appendChild(card);
+
+        // Collect inputs for arrow-key navigation
+        card.querySelectorAll('.score-input').forEach(inp => allInputs.push(inp));
+      });
+
+      container.appendChild(section);
+    });
+
+    // Attach events to all inputs
+    allInputs.forEach((inp, idx) => {
+      const matchId = inp.dataset.match;
+      const side = inp.dataset.side;
+
+      inp.addEventListener('input', () => handleScoreChange(matchId, side, inp));
+      inp.addEventListener('keydown', e => {
+        handleScoreKeydown(e);
+        handleInputArrow(e, allInputs, idx);
+      });
+      // Select all on focus for quick editing
+      inp.addEventListener('focus', () => inp.select());
+      // Clamp on blur
+      inp.addEventListener('blur', () => {
+        if (inp.value !== '') inp.value = sanitiseScore(inp.value);
+      });
+    });
+  }
+
+  /* --- Export CSV -------------------------------------------- */
+  function exportCSV() {
+    const rows = [['Match ID', 'Home Team', 'Away Team', 'Home Score', 'Away Score', 'Date']];
+
+    FIXTURES.forEach(group => {
+      group.matches.forEach(match => {
+        const p = predictions[match.id] || {};
+        rows.push([
+          match.id,
+          match.homeTeam,
+          match.awayTeam,
+          p.home !== undefined && p.home !== '' ? p.home : '',
+          p.away !== undefined && p.away !== '' ? p.away : '',
+          match.date
+        ]);
+      });
+    });
+
+    const csv = rows.map(row =>
+      row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')
+    ).join('\r\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'wc2026_predictions.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    showToast('CSV Downloaded ✓');
+  }
+
+  /* --- Reset confirm modal ----------------------------------- */
+  function openResetModal() {
+    document.getElementById('modal-overlay').classList.add('open');
+    document.getElementById('modal-confirm').focus();
+  }
+
+  function closeResetModal() {
+    document.getElementById('modal-overlay').classList.remove('open');
+  }
+
+  function doReset() {
+    predictions = {};
+    savePredictions();
+    renderFixtures();
+    updateProgress();
+    closeResetModal();
+    showToast('Predictions Reset');
+  }
+
+  /* --- Toast ------------------------------------------------- */
+  let toastTimer;
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+
+  /* --- Escape HTML utility ----------------------------------- */
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  /* --- Wire up buttons --------------------------------------- */
+  document.getElementById('btn-export').addEventListener('click', exportCSV);
+  document.getElementById('btn-reset').addEventListener('click', openResetModal);
+  document.getElementById('modal-cancel').addEventListener('click', closeResetModal);
+  document.getElementById('modal-confirm').addEventListener('click', doReset);
+
+  // Close modal on backdrop click
+  document.getElementById('modal-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('modal-overlay')) closeResetModal();
+  });
+
+  // Close modal on Escape
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeResetModal();
+  });
+
+  /* --- INIT -------------------------------------------------- */
+  loadPredictions();
+  renderFixtures();
+  updateProgress();
+  </script>
+
+</body>
+</html>
